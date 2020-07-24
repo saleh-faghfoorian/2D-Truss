@@ -3,7 +3,7 @@ This is a programm for solving every 2D truss problem. This solving method is ba
 
 This is a project Saleh Faghfoorian, mechanical engineering undergraduate student at Sharif University of Technology.
 
-## Input Nodes File's Format
+## Nodes File's Format (Input)
 you should enter your nodes information in this format :
 ```
 1st Column : number of the node
@@ -14,15 +14,21 @@ you should enter your nodes information in this format :
 6th Column : x component of constraint of the node (0 for no restriction , 1 for restricion in displacement)
 7th Column : y component of constraint of the node (0 for no restriction , 1 for restricion in displacement)
 ```
-## Input Elements File's Format
+## Elements File's Format (Input)
 you should enter your elements information in this format :
 ```
 1st Column : number of the element
 2nd Column : number of node on the buttom of the element
 3rd Column : number of node on the top of the element
-4th Column : Area of the element
-5th Column : Young's modulus of the element
-6th Column : Yield Strength of the element
+4th Column : area of the element
+5th Column : material number of the element
+```
+
+## Material File's Format (Input)
+```
+1st Column : number of the material type
+2nd Column : Young's modulus of the material
+3rd Column : Yield Strength of the material
 ```
 * Now you just need to run the code
 * Job's done! :sunglasses:
