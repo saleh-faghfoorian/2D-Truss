@@ -7,8 +7,8 @@ This is a project done by Saleh Faghfoorian, mechanical engineering undergraduat
 you should enter your nodes information in this format :
 ```
 1st Column : number of the node
-2nd Column : x component of position the node (in the cartesian coordinate system)
-3rd Column : y component of position the node (in the cartesian coordinate system)
+2nd Column : x component of position of the node (in the cartesian coordinate system x-y)
+3rd Column : y component of position of the node (in the cartesian coordinate system x-y)
 4th Column : x component of Force applied on the node
 5th Column : y component of Force applied on the node
 6th Column : x component of constraint of the node (0 for no restriction , 1 for restricion in displacement)
