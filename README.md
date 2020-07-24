@@ -30,3 +30,6 @@ you should enter your elements information in this format :
 * Also you have 2 diagrams.
 * 1st diagram is the truss before and after deformation. ( Before : "gray" , After : "black" )
 * 2nd diagram is the force of each element.
+
+## Developers
+* **Saleh Faghfoorian** [Saleh Faghfoorian](https://github.com/saleh-faghfoorian)
