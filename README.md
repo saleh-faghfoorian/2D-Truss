@@ -25,8 +25,8 @@ you should enter your elements information in this format :
 6th Column : Yield Strength of the element
 ```
 * Now you just need to run the code
-Job's done! :sunglasses:
+* Job's done! :sunglasses:
 * Now you have a report which tells you the forces, displacements, stresses, and the factor of safety.
-Also you have 2 diagrams.
+* Also you have 2 diagrams.
 * 1st diagram is the truss before and after deformation. ( Before : "gray" , After : "black" )
 * 2nd diagram is the force of each element.
