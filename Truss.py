@@ -1,15 +1,23 @@
 import numpy as np                      # This project is coded to solve each 2D truss problem
 import matplotlib.pyplot as plt         # Done By Saleh, Email : saleh.faghfoorian@gmail.com , github.com/saleh-faghfoorian
 
-N = 0
-M = 0
+N         = 0
+M         = 0
+Mat_types = 0
 
-nodes = []
-elements = []
+materials  = []
+nodes     = []
+elements  = []
 ex_forces = []
-FS    = []        
-STR = []
-disp = []
+FS        = []        
+STR       = []
+disp      = []
+
+class material:                                                    # defining material
+    def __init__(self, number, E, S_y):
+        self.number = number
+        self.E = E
+        self.S_y = S_y
 
 class node:                                                        # defining node
     def __init__(self,number,x,y,f_e_x,f_e_y,constraint_x,constraint_y):
@@ -25,29 +33,42 @@ class node:                                                        # defining no
         self.elements_connected    = []
 
 class element:                                                     # defining element
-    def __init__(self,number,node_i,node_j,A,E,S_y):
-        self.number = number
-        self.node_i = node_i
-        self.node_j = node_j
-        self.L      = 0.0
-        self.A      = A
-        self.E      = E
-        self.S_y    = S_y
-        self.angle  = 0.0
-        self.s      = 0.0
-        self.c      = 0.0
-        self.delta  = 0.0
-        self.f      = 0.0
-        self.stress = 0.0
-        self.FS     = 0.0
+    def __init__(self,number,node_i,node_j,A,Material):
+        self.number   = number
+        self.node_i   = node_i
+        self.node_j   = node_j
+        self.L        = 0.0
+        self.A        = A
+        self.Material = Material
+        self.angle    = 0.0
+        self.s        = 0.0
+        self.c        = 0.0
+        self.delta    = 0.0
+        self.f        = 0.0
+        self.stress   = 0.0
+        self.FS       = 0.0
     
 
-nodes_file = open("./nodes.txt","r+")              # opening nodes file : properties of nodes
+nodes_file = open("./nodes.txt","r+")                              # opening nodes file : properties of nodes
 while nodes_file.readline():                                       # finding the number of nodes
     N += 1
 nodes_file.close()
 nodes_file = open("./nodes.txt","r+")
 
+
+
+mat = open("./materials.txt","r+")                                  # opening material file : properties of the materials
+while mat.readline():                                              # fining the number of materials used in the elements
+    Mat_types += 1
+mat.close()
+mat = open("./materials.txt","r+")
+for i in range(Mat_types):                                         # creating a list of materials
+    M_list = mat.readline()
+    M_list = M_list.split()
+    M_i    = material(M_list[0], M_list[1], M_list[2])
+    materials.append(M_i)
+mat.close
+    
 
 for i in range(N):                                                 # getting nodes from file
     lists  = nodes_file.readline()
@@ -59,7 +80,6 @@ for i in range(N):                                                 # getting nod
     if int(lists[6]) == 1 :
         nodes[i].v = 0
 nodes_file.close()
-
 
 
 def plot_nodes():                                                  # drawing nodes
@@ -91,7 +111,7 @@ for i in range(N):                                                 # creating a 
     ex_forces.append(float(nodes[i].f_e_x))
     ex_forces.append(float(nodes[i].f_e_y))
 
-elements_file = open("./elements.txt","r+")        # opening elements file : properties of elements
+elements_file = open("./elements.txt","r+")                        # opening elements file : properties of elements
 while elements_file.readline():                                    # finding the number of elements
     M += 1
 elements_file.close()
@@ -100,7 +120,7 @@ elements_file = open("./elements.txt","r+")
 for i in range(M):                                                 # getting elements from file
     list_2            = elements_file.readline()
     list_2            = list_2.split()
-    element_1         = element(int(list_2[0]),int(list_2[1]),int(list_2[2]),float(list_2[3]),float(list_2[4]),float(list_2[5]))
+    element_1         = element(int(list_2[0]),int(list_2[1]),int(list_2[2]),float(list_2[3]),int(list_2[4]))
     elements.append(element_1)
     elements[i].L     = np.sqrt((float(nodes[elements[i].node_i].x) - float(nodes[elements[i].node_j].x))**2 \
     + (float(nodes[elements[i].node_i].y) - float(nodes[elements[i].node_j].y))**2)
@@ -125,11 +145,12 @@ for i in range(N):                                                 # finding ele
 
 C = [[0]*(2*N) for i in range(2*N)]                                  
 
+
 for i in range(N):                                                 # X-Axis Equations
     for j in range(2*N):  
         if i==j :
-            c               = [-((elements[r].A * elements[r].E * (elements[r].c)**2 )/(elements[r].L)) for r in nodes[i].elements_connected]
-            d               = [-((elements[r].A * elements[r].E * elements[r].c * elements[r].s ) / (elements[r].L)) for r in nodes[i].elements_connected]
+            c               = [-((elements[r].A * float(materials[int(elements[r].Material)].E) * (elements[r].c)**2 )/(elements[r].L)) for r in nodes[i].elements_connected]
+            d               = [-((elements[r].A * float(materials[int(elements[r].Material)].E) * elements[r].c * elements[r].s ) / (elements[r].L)) for r in nodes[i].elements_connected]
             C[2*i][2*i]     = sum(c)
             C[2*i][2*i + 1] = sum(d)
         else :
@@ -138,14 +159,14 @@ for i in range(N):                                                 # X-Axis Equa
                     q = elements[r].node_j
                 elif elements[r].node_j == i :
                     q = elements[r].node_i
-                C[2*i][2*q]     = ((elements[r].A * elements[r].E * (elements[r].c)**2) / elements[r].L)
-                C[2*i][2*q + 1] = ((elements[r].A * elements[r].E * elements[r].c * elements[r].s) / elements[r].L)
+                C[2*i][2*q]     = ((elements[r].A * float(materials[int(elements[r].Material)].E) * (elements[r].c)**2) / elements[r].L)
+                C[2*i][2*q + 1] = ((elements[r].A * float(materials[int(elements[r].Material)].E) * elements[r].c * elements[r].s) / elements[r].L)
 
 for i in range(N):                                                 # Y-Axis Equations
     for j in range(2*N):  
             if i == j :
-                e  = [-((elements[r].A * elements[r].E * elements[r].c * elements[r].s )/(elements[r].L)) for r in nodes[i].elements_connected]
-                f  = [-((elements[r].A * elements[r].E * (elements[r].s)**2 ) / (elements[r].L)) for r in nodes[i].elements_connected]
+                e  = [-((elements[r].A * float(materials[int(elements[r].Material)].E) * elements[r].c * elements[r].s )/(elements[r].L)) for r in nodes[i].elements_connected]
+                f  = [-((elements[r].A * float(materials[int(elements[r].Material)].E) * (elements[r].s)**2 ) / (elements[r].L)) for r in nodes[i].elements_connected]
                 C[2*i + 1][2*i]     = sum(e)
                 C[2*i + 1][2*i + 1] = sum(f)
             else :
@@ -154,8 +175,8 @@ for i in range(N):                                                 # Y-Axis Equa
                         p = elements[r].node_j
                     elif elements[r].node_j == i :
                         p = elements[r].node_i
-                    C[2*i + 1][2*p]     = ((elements[r].A * elements[r].E * elements[r].c * elements[r].s) / elements[r].L)
-                    C[2*i + 1][2*p + 1] = ((elements[r].A * elements[r].E * (elements[r].s)**2) / elements[r].L)
+                    C[2*i + 1][2*p]     = ((elements[r].A * float(materials[int(elements[r].Material)].E) * elements[r].c * elements[r].s) / elements[r].L)
+                    C[2*i + 1][2*p + 1] = ((elements[r].A * float(materials[int(elements[r].Material)].E) * (elements[r].s)**2) / elements[r].L)
 
                                                       # list of displacements
 
@@ -224,11 +245,11 @@ for i in range(M):                                                 # calculating
     * float(elements[i].c)) + ((float(nodes[int(elements[i].node_j)].v) - float(nodes[int(elements[i].node_i)].v)) \
     * float(elements[i].s))
 
-    elements[i].f = float(elements[i].A) * float(elements[i].E) * float(elements[i].delta) / float(elements[i].L)
+    elements[i].f = float(elements[i].A) * float(materials[int(elements[i].Material)].E) * float(elements[i].delta) / float(elements[i].L)
 
     elements[i].stress = elements[i].f / float(elements[i].A)
 
-    elements[i].FS     = np.abs(elements[i].S_y / elements[i].stress)
+    elements[i].FS     = np.abs(float(materials[int(elements[i].Material)].S_y) / elements[i].stress)
 
 
 for k in range(M):                                                 # Creating a list for FS and Stresses
@@ -296,6 +317,9 @@ outputs.write("{0:6.2f}".format((max(STR))))
 outputs.write(" MPa\n\n")
 outputs.write("Minimum Fator of Safety for the elements of this truss is = ")
 outputs.write("{0:3.2f}".format((min(FS))))
+outputs.write("\n\n")
+outputs.write("Numner of types of materials used in the elements is = ")
+outputs.write(str(Mat_types))
 outputs.close()
 
 
