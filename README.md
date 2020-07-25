@@ -1,4 +1,4 @@
-# Truss
+# 2D Truss
 This is a program for solving every 2D truss problem. This solving method is based on deformation of the elements of the truss.
 
 This is a project done by Saleh Faghfoorian, mechanical engineering undergraduate student at Sharif University of Technology.
